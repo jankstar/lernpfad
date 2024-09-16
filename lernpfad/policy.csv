@@ -1,0 +1,17 @@
+p, admin, data, *, *, *
+p, gast, data, all, Kurse, get
+p, gast, data, all, Kurs_G000, get
+p, klasse1, data, all, Kurs_G000, get
+p, klasse1, data, all, Kurs_M001, get
+p, klasse2, data, all, Kurs_M102, get
+p, klasse1, data, all, Kurse, get
+g, jank, klasse1, data
+g, superjoda, admin, data
+g, superjoda, gast, data
+g, superjoda, klasse1, data
+g, Steffi, klasse1, data
+g, Steffi, gast, data
+g, Julian, klasse1, data
+g, Julian, gast, data
+g, Gast, gast, data
+g, jojo, gast, data
