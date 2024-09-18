@@ -22,11 +22,26 @@
         </q-btn>
         <q-toolbar-title> Lernpfad </q-toolbar-title>
 
+        <q-separator spaced inset></q-separator>
+        <q-select v-model="$i18n.locale" :options="localeOptions" dark :label="Language" dense emit-value map-options
+          options-dense style="min-width: 100px" :popup-content-style="{ backgroundColor: '#909090' }"
+          @update:model-value="saveLanguData" />
+        <q-separator spaced inset></q-separator>
+        <q-btn flat dense round :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'" aria-label="Dark" @click="
+                    {
+          $q.dark.toggle();
+          saveDarkData();
+        }
+          ">
+          <q-tooltip>{{ $t("InfoToggle") }}</q-tooltip></q-btn>
+        <q-separator spaced inset></q-separator>
+
         <div>{{ user.name }}&nbsp; &nbsp;</div>
         <q-btn v-if="user.name == '' || user.name == 'Gast'" flat dense round icon="login" aria-label="Benutzer"
           @click="onLogout()"><q-tooltip>Login</q-tooltip></q-btn>
         <q-btn v-else flat dense round icon="logout" aria-label="Logout"
           @click="onLogout()"><q-tooltip>Logout</q-tooltip></q-btn>
+
       </q-toolbar>
     </q-header>
 
@@ -64,7 +79,7 @@
           </q-card-section>
         </q-card>
       </q-dialog>
-      <router-view v-model.sync="loginDialog" :user="user" :server="server" />
+      <router-view v-model.sync="loginDialog" :user="user" :server="server" :langu="$i18n.locale" />
     </q-page-container>
   </q-layout>
 </template>
@@ -96,6 +111,10 @@ export default defineComponent({
   },
   data: () => {
     return {
+      localeOptions: [
+        { value: "en-US", label: "English" },
+        { value: "de-DE", label: "Deutsch" },
+      ],
       essentialLinks: linksList,
       leftDrawerOpen: false,
       server: location.protocol + "//" + location.host, //"http://localhost:8081",
@@ -104,6 +123,26 @@ export default defineComponent({
       loginDialogPassword: "",
       user: undefined,
     };
+  },
+
+  mounted() {
+    console.log(`MainLayout::mounted()`);
+    const JSONi18n_locale = localStorage.getItem("i18n_locale");
+    if (JSONi18n_locale) {
+      let i18n_locale = JSON.parse(JSONi18n_locale);
+      if (i18n_locale) {
+        this.$i18n.locale = i18n_locale;
+      }
+    }
+    const JSONdark = localStorage.getItem("dark");
+    if (JSONdark) {
+      let dark = JSON.parse(JSONdark);
+      if (dark) {
+        if (this.$q.dark.isActive != dark) {
+          this.$q.dark.toggle();
+        }
+      }
+    }
   },
 
   computed: {
@@ -174,6 +213,15 @@ export default defineComponent({
       } else {
         this.loginDialog = true;
       }
+    },
+
+    saveLanguData() {
+      console.log(`saveLanguData()`);
+      localStorage.setItem("i18n_locale", JSON.stringify(this.$i18n.locale));
+    },
+    saveDarkData() {
+      console.log(`saveDarkData()`);
+      localStorage.setItem("dark", JSON.stringify(this.$q.dark.isActive));
     },
   },
 });
