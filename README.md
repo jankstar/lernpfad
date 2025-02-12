@@ -39,7 +39,7 @@ Der Client greift auf den Port des Go-Server zu.
 Anschließend kann der go Debugger gestartet werden - der Server läuft dann auf Port 8081.
 Außerdem wird mit
 `quasar dev`
-der Client-Server via qausar zum debuggen auf Port 8080 gestratet.
+der Client-Server via qausar zum debuggen auf Port 8080 gestartet.
 
 ## Deploymend azure
 

@@ -24,7 +24,7 @@
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.19.1",
-        "@quasar/app-vite": "^1.0.0",
+        "@quasar/app-vite": "^2.0.8",
         "autoprefixer": "^10.4.13",
         "eslint": "^8.10.0",
         "eslint-config-prettier": "^8.1.0",
@@ -34,7 +34,7 @@
         "tailwindcss": "^3.2.4"
     },
     "engines": {
-        "node": "^18 || ^16 || ^22",
+        "node": "^18 || ^16 || ^22 || ^23",
         "npm": ">= 6.13.4"
     }
 }
